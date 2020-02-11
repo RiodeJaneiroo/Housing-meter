@@ -1,7 +1,9 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
-const InputBlock = ({onHandleChange, data, prevValue = ""}) => {
+const InputBlock = ({onHandleChange, data, prevValue}) => {
   const {title, type, name, value} = data;
+  console.log(value);
   
   const currentMonth = value - prevValue;
   return (
@@ -30,6 +32,17 @@ const InputBlock = ({onHandleChange, data, prevValue = ""}) => {
         </div>
       </div>
   )
+}
+InputBlock.defaultProps = {
+  prevValue: 0
+}
+InputBlock.propTypes = {
+  data: PropTypes.shape({
+    title: PropTypes.node,
+    type: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ])
+  })
 }
 
 export default InputBlock;

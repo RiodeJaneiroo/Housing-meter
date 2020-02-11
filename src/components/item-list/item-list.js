@@ -2,15 +2,19 @@ import React from "react";
 import Spinner from "../spinner";
 
 const ItemList = ({ items, onItemDelete }) => {
-  if(items === null) {
-    return null;
-  }
   
+  if(items === null) {
+    return (
+      <div className="col-md-8 mx-auto mt-4">
+        <Spinner />
+      </div>
+    );
+  }
+
   if (!Object.keys(items).length) {
     return (
       <div className="col-md-8 mx-auto mt-4">
-        <h2 className="text-center">История</h2>
-        <Spinner />
+        <p>Внесите первые данные.</p>
       </div>
     );
   }

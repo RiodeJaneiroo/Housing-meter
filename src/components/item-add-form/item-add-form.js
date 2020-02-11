@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import InputBlock from '../input-block/inputBlock'
 
 export default class ItemAddForm extends Component {
-
+  static defaultProps = {
+    lastCounters: {}
+  }
   state = {
     iceWater: { title: "Холодна вода", name: "iceWater", value: "" },
     hotWaterBack: { title: "Г.В.В", name: "hotWaterBack", value: "" },
@@ -42,7 +44,7 @@ export default class ItemAddForm extends Component {
 
   render() {
     const { onSubmit, handleChange, getTwoDigitDateFormat } = this;
-    const { lastCounters = {} } = this.props;
+    const { lastCounters } = this.props;
     const { iceWater, hotWaterBack, hotWater, gas, light } = this.state;
 
     const currentDate = new Date();

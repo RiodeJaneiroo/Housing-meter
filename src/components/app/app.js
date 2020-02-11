@@ -8,7 +8,6 @@ export default class App extends Component {
   maxId = 100;
   dataRef = firestore.collection('apartment/ODbPGN3kqlmPiQUhjc9Z/months/');
   state = {
-    dataInfo: {},
     lastCounters: {},
     msgType: 0, // 0: danger | 1: success | 2: warning
     months: null
@@ -17,9 +16,9 @@ export default class App extends Component {
     
     const snapshop = await this.dataRef.get();
     const months = snapshop.docs.map(this.collectIdsAndDocs);
-    const lastCounters = months.slice().pop();
+    const lastCounters = {}; //months.slice().pop();
     
-
+    
     this.setState({
       months,
       lastCounters
