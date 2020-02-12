@@ -1,14 +1,6 @@
 @media (max-width: 600px) {
-  .container {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  .row {
-    margin-left: -10px;
-    margin-right: -10px;
-  }
   .table {
-    font-size: 14px;
+    font-size: 12px;
   }
   .table th, .table td {
     padding: 0.2rem;
