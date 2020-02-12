@@ -1,6 +1,8 @@
 import React from "react";
 import Spinner from "../spinner";
 
+import "./item-list.css";
+
 const ItemList = ({ items, onItemDelete }) => {
   
   if(items === null) {

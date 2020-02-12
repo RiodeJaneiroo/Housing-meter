@@ -7,7 +7,7 @@ const InputBlock = ({onHandleChange, data, prevValue}) => {
   const currentMonth = value - prevValue;
   return (
     
-    <div className="col-6">
+    <div className="col-12 col-md-6">
         <div className="form-row">
           <div className="col">
             <div className="mb-2">{title}</div>

@@ -1,5 +1,10 @@
 {
- "name": "App",
+  "name": "Показатели счетчиков",
+  "short_name": "Housing meter",
+  "lang": "ru-RU",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2C3E50",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
