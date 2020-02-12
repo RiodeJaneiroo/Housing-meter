@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import ItemAddForm from "../item-add-form";
 import ItemList from "../item-list";
 import Message from "../message";
-import { firestore } from "../../firebase";
+import SignIn from "../sign-in";
+import { firestore, fireauth } from "../../firebase";
 
 export default class App extends Component {
   maxId = 100;
@@ -10,14 +11,21 @@ export default class App extends Component {
   state = {
     lastCounters: {},
     msgType: 0, // 0: danger | 1: success | 2: warning
-    months: null
+    months: null,
+    userAuth: null
   };
   componentDidMount = async () => {
     
     const snapshop = await this.dataRef.get();
     const months = snapshop.docs.map(this.collectIdsAndDocs);
-    const lastCounters = {}; //months.slice().pop();
-    
+    const lastCounters = months.slice().pop();
+
+    await fireauth.onAuthStateChanged((user) => {
+      const userAuth = user ? user.uid : null;
+      this.setState({
+        userAuth
+      });
+    });
     
     this.setState({
       months,
@@ -67,17 +75,42 @@ export default class App extends Component {
     this.showMsg("Показатели счетчиков успешно удалены!");
   };
 
+  onSignIn = async pass => {
+
+    await fireauth.signInWithEmailAndPassword('prainua@gmail.com', pass).then((res) => {
+      
+      const userAuth = res.user.uid;
+      this.setState({ userAuth });  
+      this.showMsg('Вы успешно вошли!');
+
+    }).catch(function(error) {
+      this.showMsg(error.message, 0);
+    });
+  }
+
   render() {
-    const { months, msgType, msgText, lastCounters } = this.state;
-    
-    return (
-      <div className="container">
-        <div className="row">
-          <Message type={msgType} text={msgText} />
-          <ItemAddForm onItemAdded={this.ItemAdd} lastCounters={lastCounters} />
-          <ItemList items={months} onItemDelete={this.ItemDelete} />
+    const { months, msgType, msgText, lastCounters, userAuth } = this.state;
+    if(userAuth) {
+      
+      return (
+        <div className="container">
+          <div className="row">
+            <Message type={msgType} text={msgText} />
+            <ItemAddForm onItemAdded={this.ItemAdd} lastCounters={lastCounters} />
+            <ItemList items={months} onItemDelete={this.ItemDelete} />
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="container">
+          <div className="row">
+            <Message type={msgType} text={msgText} />
+            <SignIn onSignIn={this.onSignIn} />
+          </div>
+        </div>
+      );
+    }
+    
   }
 }

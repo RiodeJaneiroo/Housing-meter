@@ -19,9 +19,10 @@ const ItemList = ({ items, onItemDelete }) => {
     );
   }
 
-  const listItems = Object.values(items);
+  items.sort((a,b) => b.month.seconds - a.month.seconds);
 
-  const elements = listItems.reverse().map(item => {
+  const listItems = Object.values(items);
+  const elements = listItems.map(item => {
     const { id, iceWater, hotWater, hotWaterBack, light, gas, month } = item;
     const renderTime = month.toDate().toLocaleDateString('ua-UA', {month: 'numeric', year: 'numeric'});
     

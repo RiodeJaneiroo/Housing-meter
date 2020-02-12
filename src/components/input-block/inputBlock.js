@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 const InputBlock = ({onHandleChange, data, prevValue}) => {
   const {title, type, name, value} = data;
-  console.log(value);
   
   const currentMonth = value - prevValue;
   return (
@@ -23,7 +22,6 @@ const InputBlock = ({onHandleChange, data, prevValue}) => {
               <input
                 type={type}
                 name={name}
-                value={value}
                 onChange={(e)=> onHandleChange(name, e.target.value)}
                 className="form-control" />
               <small className="form-text text-muted">текущий месяц</small>

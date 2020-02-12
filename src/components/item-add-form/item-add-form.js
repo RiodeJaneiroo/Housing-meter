@@ -49,7 +49,7 @@ export default class ItemAddForm extends Component {
 
     const currentDate = new Date();
     const renderDate = `${currentDate.getFullYear()}-${getTwoDigitDateFormat(currentDate.getMonth() + 1)}`;
-    console.log(currentDate.getMonth());
+
     
     
     return (
