@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 
 const InputBlock = ({onHandleChange, data, prevValue}) => {
-  const {title, type, name, value} = data;
+  const {title, type = 'number', name, value} = data;
   
   const currentMonth = value - prevValue;
   return (
