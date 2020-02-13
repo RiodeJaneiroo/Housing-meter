@@ -1,116 +1,100 @@
-import React, { Component } from "react";
+import React, { useState, useEffect} from "react";
 import ItemAddForm from "../item-add-form";
 import ItemList from "../item-list";
-import Message from "../message";
+// import Message from "../message";
 import SignIn from "../sign-in";
 import { firestore, fireauth } from "../../firebase";
+const dataRef = firestore.collection('apartment/ODbPGN3kqlmPiQUhjc9Z/months/');
 
-export default class App extends Component {
-  maxId = 100;
-  dataRef = firestore.collection('apartment/ODbPGN3kqlmPiQUhjc9Z/months/');
-  state = {
-    lastCounters: {},
-    msgType: 0, // 0: danger | 1: success | 2: warning
-    months: null,
-    userAuth: null
-  };
-  componentDidMount = async () => {
-    
-    const snapshop = await this.dataRef.get();
-    const months = snapshop.docs.map(this.collectIdsAndDocs);
-    const lastCounters = months.slice().pop();
+const App = () => {
+  const [months, setMonths] = useState([]);
+  // const [message, setMessage] = useState({});
+  const [userAuth, setUserAuth] = useState(null);
+  const [lastCounters, setLastCounters] = useState({});
 
-    await fireauth.onAuthStateChanged((user) => {
-      const userAuth = user ? user.uid : null;
-      this.setState({
-        userAuth
+
+  
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const snapshop = await dataRef.get();
+      const months = snapshop.docs.map(collectIdsAndDocs);
+      
+      setMonths(months);
+  
+      await fireauth.onAuthStateChanged((user) => {
+        const userAuth = user ? user.uid : null;
+        setUserAuth(userAuth);
       });
+      
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+
+    setMonths(months => {
+      months.sort((a,b) => b.month.seconds - a.month.seconds);
+      setLastCounters(months[0]);
+
+      return months;
     });
     
-    this.setState({
-      months,
-      lastCounters
-    });
-    
-  }
-  collectIdsAndDocs(doc) {
+  }, [months]);
+ 
+  const collectIdsAndDocs = (doc) => {
     return {id: doc.id, ...doc.data()};
   }
-  showMsg = (msgText, msgType = 1, msgTimeout = 5000) => {
-    this.setState({
-      msgType,
-      msgText
-    });
 
-    setTimeout(() => {
-      this.setState({
-        msgText: ""
-      });
-    }, msgTimeout);
-  };
+ 
 
-  ItemAdd = async item => {
-    const { dataRef, showMsg } = this;
+  const ItemAdd = async item => {
 
     const docRef = await dataRef.add(item);
     const doc = await docRef.get();
-    const newPost = this.collectIdsAndDocs(doc);
+    const newPost = collectIdsAndDocs(doc);
 
-    this.setState(({months}) => ({months: [newPost, ...months]}));
+    setMonths(old => [newPost, ...old]);
 
-    showMsg("Показатели счетчиков успешно добавлены!");
+    // showMsg("Показатели счетчиков успешно добавлены!");
   };
 
-  ItemDelete = async id => {
+  const ItemDelete = async id => {
     let confirmAc = window.confirm("Вы действительно хотите удалить запись?");
     if (!confirmAc) return;
-    console.log(id);
     
-    await this.dataRef.doc(id).delete();
+    await dataRef.doc(id).delete();
     
-    const allMonths = this.state.months;
-    const months = allMonths.filter(month => month.id !== id);
-    this.setState({ months });
-
-    this.showMsg("Показатели счетчиков успешно удалены!");
+    const newMonths = months.filter(month => month.id !== id);
+    setMonths(newMonths);
   };
 
-  onSignIn = async pass => {
+  const onSignIn = async pass => {
 
     await fireauth.signInWithEmailAndPassword('prainua@gmail.com', pass).then((res) => {
-      
-      const userAuth = res.user.uid;
-      this.setState({ userAuth });  
-      this.showMsg('Вы успешно вошли!');
-
+      setUserAuth(res.user.uid)
+      // showMsg('Вы успешно вошли!');
     }).catch(function(error) {
-      this.showMsg(error.message, 0);
+      // showMsg(error.message, 0);
     });
   }
 
-  render() {
-    const { months, msgType, msgText, lastCounters, userAuth } = this.state;
-    if(userAuth) {
-      
-      return (
-        <div className="container">
-          <div className="row">
-            <Message type={msgType} text={msgText} />
-            <ItemAddForm onItemAdded={this.ItemAdd} lastCounters={lastCounters} />
-            <ItemList items={months} onItemDelete={this.ItemDelete} />
+
+  return (
+    <div className="container">
+      <div className="row">
+        {/* <Message type={msgType} text={msgText} /> */}
+        {userAuth ? (
+          <div>
+            <ItemAddForm onItemAdded={ItemAdd} lastCounters={lastCounters} />
+            <ItemList items={months} onItemDelete={ItemDelete} />
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="container">
-          <div className="row">
-            <Message type={msgType} text={msgText} />
-            <SignIn onSignIn={this.onSignIn} />
-          </div>
-        </div>
-      );
-    }
-    
-  }
+        ) : (
+          <SignIn onSignIn={onSignIn} />
+        )}
+      </div>
+    </div>
+  );
 }
+
+export default App;
