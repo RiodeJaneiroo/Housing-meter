@@ -1,6 +1,9 @@
 import React from "react";
 import "./message.css";
-const message = ({ type, text }) => {
+
+const Message = ({ msg: {type = 1, text} }) => {
+  console.log(type);
+  
   if (!text) {
     return null;
   }
@@ -14,4 +17,4 @@ const message = ({ type, text }) => {
   );
 };
 
-export default message;
+export default Message;

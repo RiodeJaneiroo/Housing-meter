@@ -6,8 +6,8 @@ export default class ItemAddForm extends Component {
     lastCounters: {}
   }
   state = {
-    iceWater: { title: "Холодна вода", name: "iceWater", value: "" },
-    hotWaterBack: { title: "Г.В.В", name: "hotWaterBack", value: "" },
+    iceWater: { title: "Холодна вода", name: "iceWater", value: "", required: true },
+    hotWaterBack: { title: "Г.В.В", name: "hotWaterBack", value: "", required: true },
     hotWater: { title: "Горячая вода", name: "hotWater", value: "" },
     gas: { title: "Газ", name: "gas", value: "" },
     light: { title: "Свет", name: "light", value: "" },

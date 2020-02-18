@@ -1,14 +1,14 @@
 import React, { useState, useEffect} from "react";
 import ItemAddForm from "../item-add-form";
 import ItemList from "../item-list";
-// import Message from "../message";
+import Message from "../message";
 import SignIn from "../sign-in";
 import { firestore, fireauth } from "../../firebase";
 const dataRef = firestore.collection('apartment/ODbPGN3kqlmPiQUhjc9Z/months/');
 
 const App = () => {
   const [months, setMonths] = useState([]);
-  // const [message, setMessage] = useState({});
+  const [message, setMessage] = useState({text: ""});
   const [userAuth, setUserAuth] = useState(null);
   const [lastCounters, setLastCounters] = useState({});
 
@@ -41,6 +41,15 @@ const App = () => {
     });
     
   }, [months]);
+
+  useEffect(() => {
+    const timerMsg = setTimeout(() => {
+      setMessage({text: ""});
+    }, 5000);
+    return () => {
+      clearTimeout(timerMsg);
+    }
+  }, [message]);
  
   const collectIdsAndDocs = (doc) => {
     return {id: doc.id, ...doc.data()};
@@ -55,8 +64,7 @@ const App = () => {
     const newPost = collectIdsAndDocs(doc);
 
     setMonths(old => [newPost, ...old]);
-
-    // showMsg("Показатели счетчиков успешно добавлены!");
+    setMessage({ text: "Показатели счетчиков успешно добавлены!" });    
   };
 
   const ItemDelete = async id => {
@@ -67,6 +75,8 @@ const App = () => {
     
     const newMonths = months.filter(month => month.id !== id);
     setMonths(newMonths);
+    setMessage({ text: "Показатели счетчика удалены!", type: 0 });    
+
   };
 
   const onSignIn = async pass => {
@@ -83,8 +93,9 @@ const App = () => {
   return (
     <div className="container">
       <div className="row">
-        {/* <Message type={msgType} text={msgText} /> */}
-        {userAuth ? (
+        <Message msg={message} />
+        
+        { userAuth ? (
           <div>
             <ItemAddForm onItemAdded={ItemAdd} lastCounters={lastCounters} />
             <ItemList items={months} onItemDelete={ItemDelete} />

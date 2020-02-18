@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 
 const InputBlock = ({onHandleChange, data, prevValue}) => {
-  const {title, type = 'number', name, value} = data;
+  const {title, type = 'number', name, value, required = false} = data;
   
   const currentMonth = value - prevValue;
   return (
@@ -21,6 +21,7 @@ const InputBlock = ({onHandleChange, data, prevValue}) => {
             <div className="form-group">
               <input
                 type={type}
+                required={required}
                 name={name}
                 onChange={(e)=> onHandleChange(name, e.target.value)}
                 className="form-control" />
