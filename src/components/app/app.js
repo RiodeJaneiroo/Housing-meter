@@ -83,9 +83,10 @@ const App = () => {
 
     await fireauth.signInWithEmailAndPassword('prainua@gmail.com', pass).then((res) => {
       setUserAuth(res.user.uid)
-      // showMsg('Вы успешно вошли!');
+      setMessage({ text: "Вы успешно вошли!"}); 
+
     }).catch(function(error) {
-      // showMsg(error.message, 0);
+      setMessage({ text: error.message, type: 0}); 
     });
   }
 
