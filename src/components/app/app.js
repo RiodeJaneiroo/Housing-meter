@@ -3,29 +3,24 @@ import ItemAddForm from "../item-add-form";
 import ItemList from "../item-list";
 import Message from "../message";
 import SignIn from "../sign-in";
-import { firestore, fireauth } from "../../firebase";
-const dataRef = firestore.collection('apartment/ODbPGN3kqlmPiQUhjc9Z/months/');
+import FirebaseService from '../../services/firebase-service';
+
+const firebase = new FirebaseService();
 
 const App = () => {
   const [months, setMonths] = useState([]);
   const [message, setMessage] = useState({text: ""});
   const [userAuth, setUserAuth] = useState(null);
   const [lastCounters, setLastCounters] = useState({});
-
-
   
   useEffect(() => {
-
     const fetchData = async () => {
-      const snapshop = await dataRef.get();
-      const months = snapshop.docs.map(collectIdsAndDocs);
-      
+
+      const months = await firebase.getData();      
+      const userId = await firebase.authStatus();
+
       setMonths(months);
-  
-      await fireauth.onAuthStateChanged((user) => {
-        const userAuth = user ? user.uid : null;
-        setUserAuth(userAuth);
-      });
+      setUserAuth(userId)
       
     };
     fetchData();
@@ -42,26 +37,15 @@ const App = () => {
     
   }, [months]);
 
-  useEffect(() => {
-    const timerMsg = setTimeout(() => {
-      setMessage({text: ""});
-    }, 5000);
-    return () => {
-      clearTimeout(timerMsg);
-    }
+  useEffect(() => { // clear message
+    const timerMsg = setTimeout(() => setMessage({text: ""}), 5000);
+    return () => clearTimeout(timerMsg);
   }, [message]);
  
-  const collectIdsAndDocs = (doc) => {
-    return {id: doc.id, ...doc.data()};
-  }
 
- 
 
   const ItemAdd = async item => {
-
-    const docRef = await dataRef.add(item);
-    const doc = await docRef.get();
-    const newPost = collectIdsAndDocs(doc);
+    const newPost = await firebase.itemAdd(item);
 
     setMonths(old => [newPost, ...old]);
     setMessage({ text: "Показатели счетчиков успешно добавлены!" });    
@@ -70,24 +54,23 @@ const App = () => {
   const ItemDelete = async id => {
     let confirmAc = window.confirm("Вы действительно хотите удалить запись?");
     if (!confirmAc) return;
-    
-    await dataRef.doc(id).delete();
+
+    await firebase.itemDelete(id);
     
     const newMonths = months.filter(month => month.id !== id);
     setMonths(newMonths);
     setMessage({ text: "Показатели счетчика удалены!", type: 0 });    
-
   };
 
   const onSignIn = async pass => {
-
-    await fireauth.signInWithEmailAndPassword('prainua@gmail.com', pass).then((res) => {
-      setUserAuth(res.user.uid)
+    const resSignIn = await firebase.signIn(pass);
+    
+    if(resSignIn.error) {
+      setMessage({ text: resSignIn.error, type: 0}); 
+    } else {
+      setUserAuth(resSignIn.userId)
       setMessage({ text: "Вы успешно вошли!"}); 
-
-    }).catch(function(error) {
-      setMessage({ text: error.message, type: 0}); 
-    });
+    }
   }
 
 
@@ -104,6 +87,7 @@ const App = () => {
         ) : (
           <SignIn onSignIn={onSignIn} />
         )}
+        
       </div>
     </div>
   );

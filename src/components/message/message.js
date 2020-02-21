@@ -2,7 +2,6 @@ import React from "react";
 import "./message.css";
 
 const Message = ({ msg: {type = 1, text} }) => {
-  console.log(type);
   
   if (!text) {
     return null;
