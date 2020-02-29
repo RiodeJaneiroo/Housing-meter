@@ -6,7 +6,19 @@
   z-index: 9;
   animation: fadeIn 1s;
 }
-
+@media (max-width: 600px) {
+  .bMessage {
+    font-size: 12px;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 0;
+  }
+  .bMessage .alert {
+    border-radius: 0;
+  }
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
